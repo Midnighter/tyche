@@ -5,12 +5,6 @@
         "nf-core/modules": {
             "custom/dumpsoftwareversions": {
                 "git_sha": "7b3315591a149609e27914965f858c9a7e071564"
-            },
-            "fastqc": {
-                "git_sha": "7b3315591a149609e27914965f858c9a7e071564"
-            },
-            "multiqc": {
-                "git_sha": "7b3315591a149609e27914965f858c9a7e071564"
             }
         }
     }

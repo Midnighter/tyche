@@ -6,7 +6,7 @@
 
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
+**nf-core/tyche** is a bioinformatics best-practice analysis pipeline for randomly sub-sampling sequencing reads to a specified coverage or number of bases.
 
 ## Samplesheet input
 
@@ -15,10 +15,6 @@ You will need to create a samplesheet with information about the samples you wou
 ```console
 --input '[path to samplesheet file]'
 ```
-
-### Multiple runs of the same sample
-
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will concatenate the raw reads before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
 
 ```console
 sample,fastq_1,fastq_2
@@ -57,7 +53,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```console
-nextflow run nf-core/tyche --input samplesheet.csv --genome GRCh37 -profile docker
+nextflow run nf-core/tyche -profile docker --input samplesheet.csv --bases 100Kb
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -67,7 +63,7 @@ Note that the pipeline will create the following files in your working directory
 ```console
 work            # Directory containing the nextflow working files
 results         # Finished results (configurable, see below)
-.nextflow_log   # Log file from Nextflow
+.nextflow.log   # Log file from Nextflow
 # Other nextflow hidden files, eg. history of pipeline runs and old logs.
 ```
 
