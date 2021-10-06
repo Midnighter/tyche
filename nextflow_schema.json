@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/tyche/main/nextflow_schema.json",
-    "title": "nf-core/rasusa pipeline parameters",
+    "$id": "https://raw.githubusercontent.com/nf-core/tyche/master/nextflow_schema.json",
+    "title": "nf-core/tyche pipeline parameters",
     "description": "Randomly subsample sequencing reads to a specified coverage or number of bases.",
     "type": "object",
     "definitions": {
