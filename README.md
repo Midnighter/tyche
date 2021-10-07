@@ -25,6 +25,8 @@ On release, automated continuous integration tests run the pipeline on a full-si
 ## Pipeline summary
 
 1. Sub-sample sequencing reads ([`rasusa`](https://github.com/mbhall88/rasusa))
+2. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
+3. Present QC for sub-sampled reads ([`MultiQC`](http://multiqc.info/))
 
 ## Quick Start
 

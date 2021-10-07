@@ -29,7 +29,7 @@ process RASUSA {
     reads_format = meta.single_end ? reads.name - reads.simpleName : reads[0].name - reads[0].simpleName
     // Cannot use `def` since it causes compilation errors complaining about redefining variables.
     input = meta.single_end ? "'${reads.name}'" : "'${reads[0].name}' '${reads[1].name}'"
-    prefix = options.suffix ? "${meta.id}${options.suffix}_${meta.seed}" : "${meta.id}_${meta.seed}"
+    prefix = options.suffix ? "${meta.id}${options.suffix}" : meta.id
     output   = meta.single_end ?  "'${prefix}${reads_format}'" : "'${prefix}_1${reads_format}' '${prefix}_2${reads_format}'"
     """
     rasusa \

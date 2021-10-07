@@ -13,6 +13,11 @@
 * [rasusa](https://doi.org/10.5281/zenodo.3731394)
     > Hall, Michael B. Rasusa: Randomly subsample sequencing reads to a specified coverage. (2019). doi:10.5281/zenodo.3731394
 
+* [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+
+* [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
+    > Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
+
 ## Software packaging/containerisation tools
 
 * [Anaconda](https://anaconda.com)

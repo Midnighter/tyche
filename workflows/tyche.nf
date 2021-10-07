@@ -10,11 +10,20 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 WorkflowTyche.initialise(params, log)
 
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input ]
+def checkPathParamList = [ params.input, params.multiqc_config ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+
+/*
+========================================================================================
+    CONFIG FILES
+========================================================================================
+*/
+
+ch_multiqc_config        = file("$projectDir/assets/multiqc_config.yaml", checkIfExists: true)
+ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config) : Channel.empty()
 
 /*
 ========================================================================================
@@ -44,9 +53,14 @@ include { SUB_SAMPLE } from '../subworkflows/local/sub_sample' addParams( option
 ========================================================================================
 */
 
+def multiqc_options   = modules['multiqc']
+multiqc_options.args += params.multiqc_title ? Utils.joinModuleArgs(["--title \"$params.multiqc_title\""]) : ''
+
 //
 // MODULE: Installed directly from nf-core/modules
 //
+include { FASTQC  } from '../modules/nf-core/modules/fastqc/main'  addParams( options: modules['fastqc'] )
+include { MULTIQC } from '../modules/nf-core/modules/multiqc/main' addParams( options: multiqc_options   )
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'  addParams( options: [publish_files : ['_versions.yml':'']] )
 
 /*
@@ -54,6 +68,9 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/
     RUN MAIN WORKFLOW
 ========================================================================================
 */
+
+// Info required for completion email and summary
+def multiqc_report = []
 
 workflow TYCHE {
 
@@ -65,20 +82,49 @@ workflow TYCHE {
     INPUT_CHECK (
         ch_input
     )
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
-    // MODULE: Run FastQC
+    // SUBWORKFLOW: Sub-sample sequencing reads
     //
     SUB_SAMPLE (
         INPUT_CHECK.out.reads
     )
-    ch_versions = ch_versions.mix(SUB_SAMPLE.out.versions.first())
-
-    CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.collectFile()
+    //
+    // MODULE: Run FastQC
+    //
+    FASTQC(
+        SUB_SAMPLE.out.reads
     )
 
+    ch_versions = ch_versions
+            .mix(INPUT_CHECK.out.versions)
+            .mix(SUB_SAMPLE.out.versions.first())
+            .mix(FASTQC.out.versions.first())
+
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions
+            .unique()
+            .collectFile(name: 'collated_versions.yml')
+    )
+
+    //
+    // MODULE: MultiQC
+    //
+    workflow_summary    = WorkflowTyche.paramsSummaryMultiqc(workflow, summary_params)
+    ch_workflow_summary = Channel.value(workflow_summary)
+
+    ch_multiqc_files = Channel.empty()
+        .mix(Channel.from(ch_multiqc_config))
+        .mix(ch_multiqc_custom_config.collect().ifEmpty([]))
+        .mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+        .mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
+        .mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
+
+    MULTIQC (
+        ch_multiqc_files.collect()
+    )
+    multiqc_report = MULTIQC.out.report.toList()
+    ch_versions    = ch_versions.mix(MULTIQC.out.versions)
 }
 
 /*

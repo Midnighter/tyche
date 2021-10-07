@@ -54,6 +54,7 @@ def include_seed(row) {
     def reads = row[1]
     def seed = row[2]
 
+    meta.id = "${meta.id}_${seed}"
     meta.seed = seed
     return [meta, reads]
 }
