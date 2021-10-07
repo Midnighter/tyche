@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/tyche/master/nextflow_schema.json",
     "title": "nf-core/tyche pipeline parameters",
-    "description": "Randomly subsample sequencing reads to a specified coverage or number of bases.",
+    "description": "Randomly sub-sample sequencing reads to a specified coverage, number of bases, or number of reads.",
     "type": "object",
     "definitions": {
         "input_output_options": {
