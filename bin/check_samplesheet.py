@@ -6,9 +6,7 @@
 
 import argparse
 import csv
-import errno
 import logging
-import os
 import sys
 from collections import Counter
 from pathlib import Path
