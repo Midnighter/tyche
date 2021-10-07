@@ -38,7 +38,8 @@ def generate_seeds() {
     if (seeds.size() >= params.options.replicates) {
         return seeds
     }
-    def rng = new Random()
+    // Use first seed to reproducibly generate the new seeds.
+    def rng = new Random(seeds[0])
     def Set<Integer> rng_seeds = []
     while (rng_seeds.size() < params.options.replicates) {
         rng_seeds.add(Math.abs(rng.nextInt()))
