@@ -4,6 +4,17 @@
 
 class WorkflowTyche {
 
+    public static Map parseSubSampleParameters(params) {
+        def result = [:]
+        result.genome_size = params.genome_size ? params.genome_size.split(',') : []
+        result.coverage = params.coverage ? params.coverage.split(',') : []
+        result.bases = params.bases ? params.bases.split(',') : []
+        result.reads_num = params.reads_num ? params.reads_num.split(',').collect { it.toInteger() } : []
+        result.seeds = params.seeds.split(',').collect { it.toInteger() }.unique()
+        result.replicates = params.replicates.toInteger()
+        return result
+    }
+
     //
     // Check and validate parameters
     //
@@ -15,8 +26,38 @@ class WorkflowTyche {
     // System.exit(1)
     // }
 
-        if (!((params.genome_size && params.coverage) || params.bases)) {
-            log.error 'You must specify either both the desired --coverage and --genome_size or the number of --bases to be sampled.'
+        if (!((params.genome_size && params.coverage) || params.bases || params.reads_num)) {
+            log.error 'You *must* specify either both the desired --coverage and --genome_size, the number of --bases, or the --reads_num to be sampled.'
+            System.exit(2)
+        }
+        // Validate and convert sample size parameters.
+        if (params.genome_size || params.coverage) {
+            if (params.genome_size.split(',').size() != params.coverage.split(',').size()) {
+                log.error 'The same number of comma-separated --genome_size and --coverage *must* be specified.'
+                System.exit(2)
+            }
+            WorkflowTyche.checkSizeParameter(params.bases, log)
+            WorkflowTyche.checkSizeParameter(params.reads_num, log)
+        }
+        if (params.bases) {
+            WorkflowTyche.checkSizeParameter(params.genome_size || params.coverage, log)
+            WorkflowTyche.checkSizeParameter(params.reads_num, log)
+        }
+        if (params.reads_num) {
+            params.reads_num = params.reads_num.split(',')
+                .collect { it.toInteger() }
+            WorkflowTyche.checkSizeParameter(params.genome_size || params.coverage, log)
+            WorkflowTyche.checkSizeParameter(params.bases, log)
+        }
+        // Convert and implicitly validate seeds parameter.
+        params.seeds = params.seeds.split(',')
+            .collect { it.toInteger() }
+            .unique()
+    }
+
+    private static void checkSizeParameter(Boolean value, log) {
+        if (value) {
+            log.error 'You *must* specify only one of the size options.'
             System.exit(2)
         }
     }

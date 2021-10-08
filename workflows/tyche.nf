@@ -34,12 +34,8 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 // Don't overwrite global params.modules, create a copy instead and use that within the main script.
 def modules = params.modules.clone()
 
-def sub_sample_options = modules.rasusa
-sub_sample_options.genome_size = params.genome_size
-sub_sample_options.coverage = params.coverage
-sub_sample_options.bases = params.bases
-sub_sample_options.seeds = params.seeds
-sub_sample_options.replicates = params.replicates
+def sub_sample_options = WorkflowTyche.parseSubSampleParameters(params)
+sub_sample_options.modules = ['rasusa': modules.rasusa, 'seqtk/sample': modules['seqtk/sample']]
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
@@ -59,7 +55,7 @@ multiqc_options.args += params.multiqc_title ? Utils.joinModuleArgs(["--title \"
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { FASTQC  } from '../modules/nf-core/modules/fastqc/main'  addParams( options: modules['fastqc'] )
+include { FASTQC  } from '../modules/nf-core/modules/fastqc/main'  addParams( options: modules.fastqc )
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main' addParams( options: multiqc_options   )
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'  addParams( options: [publish_files : ['_versions.yml':'']] )
 

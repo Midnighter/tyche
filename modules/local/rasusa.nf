@@ -19,7 +19,7 @@ process RASUSA {
     }
 
     input:
-    tuple val(meta), path(reads)
+    tuple val(meta), path(reads), val(seed), val(size)
 
     output:
     tuple val(meta), path("*${reads_format}"), emit: reads
@@ -36,8 +36,8 @@ process RASUSA {
         ${options.args} \
         --input ${input} \
         --output ${output} \
-        --seed ${meta.seed} \
-        ${params.options.size}
+        --seed ${seed} \
+        ${size}
 
     cat <<-END_VERSIONS > versions.yml
     ${getProcessName(task.process)}:
