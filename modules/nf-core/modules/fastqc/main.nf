@@ -27,12 +27,13 @@ process FASTQC {
     path  "versions.yml"           , emit: versions
 
     script:
+    reads_format = meta.single_end ? reads.name - reads.simpleName : reads[0].name - reads[0].simpleName
     // Add soft-links to original FastQs for consistent naming in pipeline
     def prefix = options.suffix ? "${meta.id}${options.suffix}" : "${meta.id}"
     if (meta.single_end) {
         """
-        [ ! -f  ${prefix}.fastq.gz ] && ln -s $reads ${prefix}.fastq.gz
-        fastqc $options.args --threads $task.cpus ${prefix}.fastq.gz
+        [ ! -f  ${prefix}${reads_format} ] && ln -s $reads ${prefix}${reads_format}
+        fastqc $options.args --threads $task.cpus ${prefix}${reads_format}
 
         cat <<-END_VERSIONS > versions.yml
         ${getProcessName(task.process)}:
@@ -41,9 +42,9 @@ process FASTQC {
         """
     } else {
         """
-        [ ! -f  ${prefix}_1.fastq.gz ] && ln -s ${reads[0]} ${prefix}_1.fastq.gz
-        [ ! -f  ${prefix}_2.fastq.gz ] && ln -s ${reads[1]} ${prefix}_2.fastq.gz
-        fastqc $options.args --threads $task.cpus ${prefix}_1.fastq.gz ${prefix}_2.fastq.gz
+        [ ! -f  ${prefix}_1${reads_format} ] && ln -s ${reads[0]} ${prefix}_1${reads_format}
+        [ ! -f  ${prefix}_2${reads_format} ] && ln -s ${reads[1]} ${prefix}_2${reads_format}
+        fastqc $options.args --threads $task.cpus ${prefix}_1${reads_format} ${prefix}_2${reads_format}
 
         cat <<-END_VERSIONS > versions.yml
         ${getProcessName(task.process)}:
