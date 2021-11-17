@@ -10,9 +10,22 @@ import logging
 import sys
 from collections import Counter
 from pathlib import Path
+from typing import Optional, List, TextIO
 
 
 logger = logging.getLogger()
+
+
+def sniff_dialect(handle: TextIO) -> csv.Dialect:
+    """"""
+    peek = handle.read(2048)
+    sniffer = csv.Sniffer()
+    # Validate the existence of the expected header columns.
+    assert sniffer.has_header(
+        peek
+    ), "The given sample sheet does not appear to contain a header."
+    handle.seek(0)
+    return sniffer.sniff(peek)
 
 
 class RowChecker:
@@ -93,7 +106,7 @@ class RowChecker:
                     row[self.sample_col] = f"{sample}_T{seen[sample]}"
 
 
-def check_samplesheet(file_in, file_out):
+def extend_samplesheet(file_in: Path, file_out: Path) -> None:
     """
     This function checks that the samplesheet follows the following structure:
 
@@ -107,17 +120,7 @@ def check_samplesheet(file_in, file_out):
     """
     required_columns = {"sample", "fastq_1", "fastq_2"}
     with file_in.open() as in_handle:
-        # Validate the existence of the expected header columns.
-        peek = in_handle.read(2048)
-        sniffer = csv.Sniffer()
-        if not sniffer.has_header(peek):
-            logger.critical(
-                f"The given sample sheet does not appear to contain a header."
-            )
-            sys.exit(1)
-        dialect = sniffer.sniff(peek)
-        in_handle.seek(0)
-        reader = csv.DictReader(in_handle, dialect=dialect)
+        reader = csv.DictReader(in_handle, dialect=sniff_dialect(in_handle))
         if not required_columns.issubset(reader.fieldnames):
             logger.critical(
                 f"The sample sheet **must** contain the column headers: "
@@ -142,7 +145,7 @@ def check_samplesheet(file_in, file_out):
             writer.writerow(row)
 
 
-def parse_args(args=None):
+def parse_args(args: Optional[List[str]] = None) -> argparse.Namespace:
     """Define and immediately parse command line arguments."""
     parser = argparse.ArgumentParser(
         description="Reformat nf-core/tyche samplesheet file and check its contents.",
@@ -162,7 +165,7 @@ def parse_args(args=None):
     return parser.parse_args(args)
 
 
-def main(args=None):
+def main(args: Optional[List[str]] = None) -> None:
     """Coordinate argument parsing and program execution."""
     args = parse_args(args)
     logging.basicConfig(level=args.log_level, format="[%(levelname)s] %(message)s")
