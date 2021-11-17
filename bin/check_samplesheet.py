@@ -106,7 +106,7 @@ class RowChecker:
                     row[self.sample_col] = f"{sample}_T{seen[sample]}"
 
 
-def extend_samplesheet(file_in: Path, file_out: Path) -> None:
+def check_samplesheet(file_in: Path, file_out: Path) -> None:
     """
     This function checks that the samplesheet follows the following structure:
 
