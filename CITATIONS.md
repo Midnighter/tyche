@@ -13,6 +13,8 @@
 * [rasusa](https://doi.org/10.5281/zenodo.3731394)
     > Hall, Michael B. Rasusa: Randomly subsample sequencing reads to a specified coverage. (2019). doi:10.5281/zenodo.3731394
 
+* [seqtk](https://github.com/lh3/seqtk)
+
 * [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 
 * [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)

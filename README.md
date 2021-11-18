@@ -16,7 +16,7 @@
 
 ## Introduction
 
-**nf-core/tyche** is a bioinformatics best-practice analysis pipeline for randomly sub-sampling sequencing reads to a specified coverage or number of bases.
+**nf-core/tyche** is a bioinformatics best-practice analysis pipeline for randomly subsampling sequencing reads to a specified coverage or number of bases/reads.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
@@ -24,9 +24,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 ## Pipeline summary
 
-1. Sub-sample sequencing reads ([`rasusa`](https://github.com/mbhall88/rasusa))
+1. Subsample sequencing reads ([`rasusa`](https://github.com/mbhall88/rasusa) or [`seqtk`](https://github.com/lh3/seqtk)) and create an extended sample sheet
 2. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-3. Present QC for sub-sampled reads ([`MultiQC`](http://multiqc.info/))
+3. Present QC for subsampled reads ([`MultiQC`](http://multiqc.info/))
 
 ## Quick Start
 
@@ -50,9 +50,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
     nextflow run nf-core/tyche -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input samplesheet.csv --bases 100Kb
     ```
 
-    The above command will sub-sample each input from the sample sheet to 100,000 sequencing reads using the default seed 100.
+    The above command will subsample each input from the sample sheet to approximately 100,000 bases using the default seed 100.
 
-    You can also specify a comma separated list of seed numbers which will each be used to sub-sample each input, e.g., `--seeds 100,200,300` means that each sample from the input sheet gets sub-sampled with the seed 100, 200, and 300.
+    You can also specify a comma separated list of seed numbers which will each be used to subsample each input, e.g., `--seeds 100,200,300` means that each sample from the input sheet gets subsampled with the seed 100, 200, and 300.
 
     Alternatively, you can set the number of replicates per input sample that you desire, such as `--replicates 20`. If the chosen number of replicates is larger than the number of provided seeds, a number of seeds equal to the number of replicates is randomly chosen.
 

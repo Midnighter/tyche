@@ -80,7 +80,7 @@ workflow TYCHE {
     )
 
     //
-    // SUBWORKFLOW: Sub-sample sequencing reads
+    // SUBWORKFLOW: subsample sequencing reads
     //
     SUB_SAMPLE (
         INPUT_CHECK.out.reads

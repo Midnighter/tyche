@@ -10,7 +10,8 @@ The directories listed below will be created in the results directory after the 
 
 The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following steps:
 
-* [rasusa](#rasusa) - Sub-sampling of sequencing reads
+* [rasusa](#rasusa) or [seqtk](#seqtk) - Subsampling of sequencing reads
+* [Subsamplesheet](#subsample-sheet) - Extended information about each subsampled read
 * [FastQC](#fastqc) - Raw read QC
 * [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
 * [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
@@ -20,12 +21,37 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 <details markdown="1">
 <summary>Output files</summary>
 
-* `rasusa/`
-    * `*_subsampled_<seed>.fastq.gz`: The sub-sampled sequencing read file.
+* `subsamples/`
+    * `*_S*.fastq.gz`: The subsampled sequencing read file.
 
 </details>
 
-[rasusa](https://github.com/mbhall88/rasusa) randomly sub-samples sequencing reads to a specified coverage or number of bases.
+[rasusa](https://github.com/mbhall88/rasusa) randomly subsamples sequencing reads to a specified coverage or number of bases.
+
+### seqtk
+
+<details markdown="1">
+<summary>Output files</summary>
+
+* `subsamples/`
+    * `*_S*.fastq.gz`: The subsampled sequencing read file.
+
+</details>
+
+[seqtk](https://github.com/lh3/seqtk) randomly subsamples sequencing reads to a specified number of reads.
+
+### Subsample Sheet
+
+<details markdown="1">
+<summary>Output files</summary>
+
+* `csv/`
+    * `*.csv`: The subsampled reads information per original sample.
+* `subsamplesheet.csv`: The extended sample sheet for all subsampled sequencing reads.
+
+</details>
+
+Provide sample information per subsampled sequencing read.
 
 ### FastQC
 
