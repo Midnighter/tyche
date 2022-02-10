@@ -32,11 +32,11 @@ process SEQTK_SAMPLE {
         // Cannot use `def` since it causes compilation errors complaining about redefining variables.
         output = reads_format.endsWith('.gz') ? "| gzip --no-name > '${prefix}${reads_format}'" : "> '${prefix}${reads_format}'"
         """
-        seqtk \
-            sample \
-            ${options.args} \
-            -s ${seed} \
-            ${reads} \
+        seqtk sample \\
+            -s ${seed} \\
+            -2 \\
+            ${options.args} \\
+            ${reads} \\
             ${size} ${output}
 
         cat <<-END_VERSIONS > versions.yml
