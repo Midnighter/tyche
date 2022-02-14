@@ -33,6 +33,7 @@ workflow SUB_SAMPLE {
         // ch_reads = SEQTK_SAMPLE.out.reads
         ch_reads = FQ_SUBSAMPLE.out.reads
         // ch_versions = SEQTK_SAMPLE.out.versions
+        ch_versions = []
     } else {
         log.error "Unknown sampling tool ${tool}."
         exit 2
