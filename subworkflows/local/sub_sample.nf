@@ -5,7 +5,8 @@
 params.options = [:]
 
 include { RASUSA } from '../../modules/local/rasusa' addParams( options: params.options.modules.rasusa )
-include { SEQTK_SAMPLE  } from '../../modules/nf-core/modules/seqtk/sample/main'  addParams( options: params.options.modules['seqtk/sample'] )
+include { FQ_SUBSAMPLE } from '../../modules/local/fq_subsample' addParams( options: params.options.modules['seqtk/sample'] )
+// include { SEQTK_SAMPLE  } from '../../modules/nf-core/modules/seqtk/sample/main'  addParams( options: params.options.modules['seqtk/sample'] )
 
 workflow SUB_SAMPLE {
     take:
@@ -26,10 +27,12 @@ workflow SUB_SAMPLE {
         ch_reads = RASUSA.out.reads
         ch_versions = RASUSA.out.versions
     } else if (tool == 'seqtk') {
-        SEQTK_SAMPLE(samples)
+        // SEQTK_SAMPLE(samples)
+        FQ_SUBSAMPLE(samples)
 
-        ch_reads = SEQTK_SAMPLE.out.reads
-        ch_versions = SEQTK_SAMPLE.out.versions
+        // ch_reads = SEQTK_SAMPLE.out.reads
+        ch_reads = FQ_SUBSAMPLE.out.reads
+        // ch_versions = SEQTK_SAMPLE.out.versions
     } else {
         log.error "Unknown sampling tool ${tool}."
         exit 2
