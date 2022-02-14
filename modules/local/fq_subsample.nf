@@ -33,7 +33,7 @@ process FQ_SUBSAMPLE {
         fq subsample \\
             ${options.args} \\
             --seed ${seed} \\
-            --read-count ${size} \\
+            --record-count ${size} \\
             --r1-dst '${prefix}_1${reads_format}' \\
             --r2-dst '${prefix}_2${reads_format}' \\
             "${reads[0]}" "${reads[1]}"
