@@ -28,10 +28,6 @@ process FQ_SUBSAMPLE {
     output_format = is_compressed ? reads_format - '.gz' : reads_format
     if (meta.single_end) {
         """
-        if [ "${is_compressed}" == "true" ]; then
-            pigz --decompress --force --keep ${reads}
-        fi
-
         fq subsample \\
             ${options.args} \\
             --seed ${seed} \\
@@ -43,10 +39,6 @@ process FQ_SUBSAMPLE {
         """
     } else {
         """
-        if [ "${is_compressed}" == "true" ]; then
-            pigz --decompress --force --keep ${reads}
-        fi
-
         fq subsample \\
             ${options.args} \\
             --seed ${seed} \\

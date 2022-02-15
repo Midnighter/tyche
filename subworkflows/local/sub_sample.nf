@@ -6,6 +6,7 @@ params.options = [:]
 
 include { RASUSA } from '../../modules/local/rasusa' addParams( options: params.options.modules.rasusa )
 include { FQ_SUBSAMPLE } from '../../modules/local/fq_subsample' addParams( options: params.options.modules['seqtk/sample'] )
+include { DECOMPRESS } from '../../modules/local/decompress'
 // include { SEQTK_SAMPLE  } from '../../modules/nf-core/modules/seqtk/sample/main'  addParams( options: params.options.modules['seqtk/sample'] )
 
 workflow SUB_SAMPLE {
@@ -17,8 +18,14 @@ workflow SUB_SAMPLE {
     def (String tool, List sample_args) = SubsampleService.selectToolWithArgs(params.options, log)
     List<Integer> seeds = SubsampleService.generateSeeds(params.options)
     List arguments = [seeds, sample_args].combinations()
+    // Decompress reads if necessary.
+    if (tool == 'seqtk') {
+        ch_decompress = DECOMPRESS(reads).out.reads
+    } else {
+        ch_decompress = reads
+    }
     // Duplicate each input by the arguments.
-    def samples = reads
+    def samples = ch_decompress
         .flatMap { sample -> SubsampleService.extendSample(sample, tool, arguments) }
 
     if (tool == 'rasusa') {
