@@ -7,6 +7,7 @@ options        = initOptions(params.options)
 
 process FQ_SUBSAMPLE {
     tag "${meta.id}"
+    label 'small_process'
 
     publishDir params.outdir,
         mode: params.publish_dir_mode,
@@ -16,28 +17,45 @@ process FQ_SUBSAMPLE {
     tuple val(meta), path(reads), val(seed), val(size)
 
     output:
-    tuple val(meta), path("*${reads_format}"), emit: reads
-    path 'versions.yml',                       emit: versions
+    tuple val(meta), path("${prefix}*"), emit: reads
 
     script:
     reads_format = meta.single_end ? reads.name - reads.simpleName : reads[0].name - reads[0].simpleName
+    is_compressed = reads_format.endsWith('.gz') ? true : false
     // Cannot use `def` since it causes compilation errors complaining about redefining variables.
-    input = meta.single_end ? "'${reads.name}'" : "'${reads[0].name}' '${reads[1].name}'"
+    input = meta.single_end ? "'${is_compressed ? reads.name - '.gz' : reads.name}'" : "'${is_compressed ? reads[0].name - '.gz' : reads[0].name}' '${is_compressed ? reads[1].name - '.gz' : reads[1].name}'"
     prefix = options.suffix ? "${meta.id}${options.suffix}" : meta.id
-    output   = meta.single_end ?  "'${prefix}${reads_format}'" : "'${prefix}_1${reads_format}' '${prefix}_2${reads_format}'"
+    output_format = is_compressed ? reads_format - '.gz' : reads_format
     if (meta.single_end) {
-
-    } else {
-
         """
+        if [ "${is_compressed}" == "true" ]; then
+            pigz --decompress --keep ${reads}
+        fi
+
         fq subsample \\
             ${options.args} \\
             --seed ${seed} \\
             --record-count ${size} \\
-            --r1-dst '${prefix}_1${reads_format}' \\
-            --r2-dst '${prefix}_2${reads_format}' \\
-            "${reads[0]}" "${reads[1]}"
+            --r1-dst '${prefix}${output_format}' \\
+            ${input}
 
+        pigz --processes ${task.cpus} '${prefix}*'
+        """
+    } else {
+        """
+        if [ "${is_compressed}" == "true" ]; then
+            pigz --decompress --keep ${reads}
+        fi
+
+        fq subsample \\
+            ${options.args} \\
+            --seed ${seed} \\
+            --record-count ${size} \\
+            --r1-dst '${prefix}_1${output_format}' \\
+            --r2-dst '${prefix}_2${output_format}' \\
+            ${input}
+
+        pigz --processes ${task.cpus} '${prefix}*'
         """
     }
 }
