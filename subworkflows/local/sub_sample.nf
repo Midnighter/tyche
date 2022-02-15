@@ -19,12 +19,11 @@ workflow SUB_SAMPLE {
     List<Integer> seeds = SubsampleService.generateSeeds(params.options)
     List arguments = [seeds, sample_args].combinations()
     // Decompress reads if necessary.
+    def ch_decompress = reads
     if (tool == 'seqtk') {
         ch_decompress = DECOMPRESS(reads).out.reads
-    } else {
-        ch_decompress = reads
     }
-    // Duplicate each input by the arguments.
+    // Replicate each input by the arguments.
     def samples = ch_decompress
         .flatMap { sample -> SubsampleService.extendSample(sample, tool, arguments) }
 
