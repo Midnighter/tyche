@@ -17,7 +17,7 @@ process FQ_SUBSAMPLE {
     tuple val(meta), path(reads), val(seed), val(size)
 
     output:
-    tuple val(meta), path("${prefix}*"), emit: reads
+    tuple val(meta), path("${prefix}*.gz"), emit: reads
 
     script:
     reads_format = meta.single_end ? reads.name - reads.simpleName : reads[0].name - reads[0].simpleName
@@ -47,7 +47,7 @@ process FQ_SUBSAMPLE {
             --r2-dst '${prefix}_2${output_format}' \\
             ${input}
 
-        pigz --processes ${task.cpus} '${prefix}*'
+        pigz --processes ${task.cpus} ${prefix}*
         """
     }
 }
