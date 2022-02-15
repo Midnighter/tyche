@@ -21,7 +21,7 @@ workflow SUB_SAMPLE {
     // Decompress reads if necessary.
     def ch_decompress = reads
     if (tool == 'seqtk') {
-        ch_decompress = DECOMPRESS(reads).out
+        ch_decompress = DECOMPRESS(reads).reads
     }
     // Replicate each input by the arguments.
     def samples = ch_decompress
