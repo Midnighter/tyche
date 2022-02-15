@@ -29,7 +29,7 @@ process FQ_SUBSAMPLE {
     if (meta.single_end) {
         """
         if [ "${is_compressed}" == "true" ]; then
-            pigz --decompress --keep ${reads}
+            pigz --decompress --force --keep ${reads}
         fi
 
         fq subsample \\
@@ -44,7 +44,7 @@ process FQ_SUBSAMPLE {
     } else {
         """
         if [ "${is_compressed}" == "true" ]; then
-            pigz --decompress --keep ${reads}
+            pigz --decompress --force --keep ${reads}
         fi
 
         fq subsample \\
