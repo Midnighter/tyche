@@ -32,7 +32,7 @@ workflow SUB_SAMPLE {
 
         ch_reads = RASUSA.out.reads
         ch_versions = RASUSA.out.versions
-    } else if (tool == 'seqtk') {
+    } else if (tool == 'fq') {
         // SEQTK_SAMPLE(samples)
         FQ_SUBSAMPLE(samples)
 

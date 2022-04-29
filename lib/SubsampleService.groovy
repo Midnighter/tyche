@@ -50,7 +50,7 @@ class SubsampleService {
             tool = 'rasusa'
             sampleArgs = options.bases.collect { "--bases ${it}" }
         } else if (options.reads_num) {
-            tool = 'seqtk'
+            tool = 'fq'
             sampleArgs = options.reads_num.clone()
         } else {
             log.error 'You *must* specify either both the desired --coverage and --genome_size, the number of --bases, or the --reads_num to be sampled.'
